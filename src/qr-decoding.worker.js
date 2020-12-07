@@ -1,6 +1,6 @@
 import jsQR from "jsqr";
 
-onmessage = function(event) {
+self.onmessage = function(event) {
   if (event.data) {
     const { id, content } = event.data;
 

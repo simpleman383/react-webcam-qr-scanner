@@ -1,11 +1,10 @@
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const path = require("path");
+
 
 module.exports = {
   mode: "production",
-  entry: {
-    main: path.resolve(__dirname, "src/index.js"),
-    worker: path.resolve(__dirname, "src/worker.js")
-  },
+  entry: path.resolve(__dirname, "src/index.js"),
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "[name].js",
@@ -24,6 +23,7 @@ module.exports = {
       {
         test: /\.jsx?$/,
         include: [ path.resolve(__dirname, "src") ],
+        exclude: /\.worker\.js$/,
         use: {
           loader: 'babel-loader',
           options: {
@@ -31,8 +31,29 @@ module.exports = {
             plugins: [ "@babel/plugin-proposal-class-properties" ]
           },
         },
+      },
+      {
+        test: /\.worker\.js$/,
+        include: [ path.resolve(__dirname, "src") ],
+        use: [
+          {
+            loader: "babel-loader",
+            options: {
+              presets: [ '@babel/preset-env' ],
+            }
+          },
+          {
+            loader: "worker-loader",
+            options: {
+              filename: "qr-worker.min.js",
+            }
+          },
+        ]
       }
     ],
-  }
+  },
 
+  plugins: [
+    new CleanWebpackPlugin()
+  ]
 };

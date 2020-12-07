@@ -4,12 +4,11 @@ import WorkerInterface from "./WorkerInterface";
 
 
 const defaultOptions = {
-  workerUrl: "",
   workerAckTimeout: 3 * 1000,
 };
 
 
-const connect = (StreamComponent, { workerUrl, workerAckTimeout } = defaultOptions) => ({ onDecode, ...props }) => {
+const connect = (StreamComponent, { workerAckTimeout } = defaultOptions) => ({ onDecode, ...props }) => {
 
   const handleDecode = React.useCallback((result) => {
     if (result !== null && typeof(onDecode) == "function") {
@@ -21,7 +20,7 @@ const connect = (StreamComponent, { workerUrl, workerAckTimeout } = defaultOptio
 
   const worker = React.useMemo(() => {
     if (typeof(Worker) !== "undefined") {
-      return new WorkerInterface(workerUrl);
+      return new WorkerInterface();
     }
     else {
       console.warn("Failed to start a Web Worker");

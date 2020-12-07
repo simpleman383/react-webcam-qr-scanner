@@ -3,11 +3,12 @@
   "version": "0.0.1",
   "description": "A humble implementation of a real-time QR-code scanner using WebRTC",
   "main": "./dist/main.js",
-  "dependencies": {},
+  "dependencies": {
+    "jsqr": "latest"
+  },
   "peerDependencies": {
     "react": "latest",
-    "react-dom": "latest",
-    "jsqr": "latest"
+    "react-dom": "latest"
   },
   "devDependencies": {
     "@babel/core": "latest",
@@ -15,11 +16,13 @@
     "@babel/preset-env": "latest",
     "@babel/preset-react": "latest",
     "babel-loader": "latest",
+    "clean-webpack-plugin": "^3.0.0",
     "react": "latest",
     "react-dom": "latest",
     "typescript": "latest",
     "webpack": "^5.9.0",
-    "webpack-cli": "^4.2.0"
+    "webpack-cli": "^4.2.0",
+    "worker-loader": "^3.0.6"
   },
   "scripts": {
     "build": "webpack --config webpack.config.js"

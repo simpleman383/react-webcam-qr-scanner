@@ -1,12 +1,14 @@
+import QrDecodingWorker from "./qr-decoding.worker.js";
+
 const asyncTimeout = (ms) => new Promise((res, rej) => setTimeout(rej, ms));
 
 class WorkerInterface {
   messages = new Map();
 
-  constructor(url) {
+  constructor() {
     this.onReceive = this.onReceive.bind(this);
 
-    this.worker = new Worker(url || "");
+    this.worker = new QrDecodingWorker();
     this.worker.addEventListener("message", this.onReceive);
   }
 
