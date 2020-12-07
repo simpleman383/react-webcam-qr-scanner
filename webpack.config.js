@@ -1,13 +1,13 @@
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const path = require("path");
 
-
 module.exports = {
   mode: "production",
   entry: path.resolve(__dirname, "src/index.js"),
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "[name].js",
+    chunkFilename: "[id].[contenthash:4].bundle.js",
     libraryTarget: "commonjs2"
   },
 

@@ -1,7 +1,5 @@
 import React from "react";
-import jsQR from "jsqr";
 import WorkerInterface from "./WorkerInterface";
-
 
 const defaultOptions = {
   workerAckTimeout: 3 * 1000,
@@ -28,6 +26,21 @@ const connect = (StreamComponent, { workerAckTimeout } = defaultOptions) => ({ o
     }
   }, []);
 
+  const [ jsQR, setJsQR ] = React.useState(null);
+
+  React.useEffect(() => {
+    if (workerState == "inactive") {
+      (async function() {
+        try {
+          const decoderInstance = await import("jsqr");
+          setJsQR(decoderInstance);
+        }
+        catch (err) {
+          console.error(err);
+        }
+      })();
+    }
+  }, [ workerState ]);
 
   const handleWorkerLoad = React.useCallback(async () => {
     try {
@@ -58,10 +71,12 @@ const connect = (StreamComponent, { workerAckTimeout } = defaultOptions) => ({ o
       const result = await worker.requestDecoding(imageData);
       handleDecode(result);
     }
-    else {
+    else if (jsQR !== null) {
       const { data, width, height } = imageData;
       const result = jsQR(data, width, height);
       handleDecode(result);
+    } else {
+      console.warn("Failed to load a decoder");
     }
   }, [ worker, workerState, handleDecode ]);
 

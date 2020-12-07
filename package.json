@@ -3,9 +3,12 @@
   "version": "0.0.1",
   "description": "A humble implementation of a real-time QR-code scanner using WebRTC",
   "main": "./dist/main.js",
-  "files": [ "dist/*" ],
+  "files": [
+    "dist/*"
+  ],
   "dependencies": {
-    "jsqr": "latest"
+    "jsqr": "latest",
+    "prop-types": "latest"
   },
   "peerDependencies": {
     "react": "latest"
@@ -23,7 +26,7 @@
   },
   "scripts": {
     "build": "webpack --config webpack.config.js",
-    "prepare": "npm run build"
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",

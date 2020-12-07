@@ -6,13 +6,13 @@ self.onmessage = function(event) {
 
     switch(content.type) {
       case "ack": {
-        postMessage({ id, content });
+        self.postMessage({ id, content });
         break;
       }
       case "decode": {
         const { data, width, height } = content.data;
         const result = jsQR(data, width, height);
-        postMessage({ 
+        self.postMessage({ 
           id: id, 
           content: {
             type: "decode",
