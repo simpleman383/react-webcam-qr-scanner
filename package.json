@@ -37,5 +37,8 @@
   "bugs": {
     "url": "https://github.com/simpleman383/react-webcam-qr-scanner/issues"
   },
-  "homepage": "https://github.com/simpleman383/react-webcam-qr-scanner#readme"
+  "homepage": "https://github.com/simpleman383/react-webcam-qr-scanner#readme",
+  "keywords": [
+    "qr", "QR code", "WebRTC", "react", "jsqr", "worker", "web worker", "qr decoding"
+  ]
 }
