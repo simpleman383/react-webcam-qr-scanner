@@ -2,31 +2,31 @@
   "name": "react-webcam-qr-scanner",
   "version": "1.0.0",
   "description": "A humble implementation of a real-time QR-code scanner using WebRTC",
-  "main": "./dist/main.js",
+  "main": "./dist/index.js",
   "files": [
     "dist/*"
   ],
   "dependencies": {
     "jsqr": "latest",
-    "prop-types": "latest"
+    "prop-types": "latest",
+    "worker-loader": "latest"
   },
   "peerDependencies": {
     "react": "latest"
   },
   "devDependencies": {
+    "@babel/cli": "latest",
     "@babel/core": "latest",
     "@babel/plugin-proposal-class-properties": "latest",
     "@babel/preset-env": "latest",
     "@babel/preset-react": "latest",
-    "babel-loader": "latest",
-    "clean-webpack-plugin": "latest",
-    "webpack": "latest",
-    "webpack-cli": "latest",
-    "worker-loader": "latest"
+    "rimraf": "latest"
   },
   "scripts": {
-    "build": "webpack --config webpack.config.js",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "build": "npm run clean && npm run transpile",
+    "clean": "rimraf dist",
+    "transpile": "babel src -d dist --copy-files"
   },
   "repository": {
     "type": "git",

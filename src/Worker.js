@@ -24,6 +24,5 @@ self.onmessage = function(event) {
       default:
         break;
     }
-
   }
 }
