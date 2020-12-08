@@ -59,7 +59,8 @@ However, some of them define the decoder behaviour and can be set as follows:
 
 Property | Type | Meaning
 ---------|------|--------
-onDecode | function | a callback that fires when a QR-code is successfully decoded
+onDecode | function | a callback which fires when a QR-code is successfully decoded
+onScannerLoad | function | a callback which fires when QR-decoding script is successfully loaded
 constraints | object | a [MediaStreamConstraints](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamConstraints) object
 captureSize | object  ```{ width: number, height: number }``` |  Represents the size of the frame area sensitive for QR-detection
  
