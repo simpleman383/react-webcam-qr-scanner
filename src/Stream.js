@@ -5,7 +5,7 @@ const defaults = {
   constraints: {
     video: true,
     audio: false,
-    facingMode: { exact: "environment" },
+    facingMode: "environment"
   },
   activeCaptureSize: {
     width: 1280,
@@ -43,6 +43,9 @@ const WebcamStream = React.forwardRef(({
 
     if (stream !== null) {
       $videoRef.current.srcObject = stream;
+      $videoRef.current.playsInline = true;
+      $videoRef.current.muted = true;
+      $videoRef.current.disablePictureInPicture = true;
       $videoRef.current.play();
     }
   }, [ mediaStreamContext ]);
