@@ -15,10 +15,23 @@ const connect = (StreamComponent, { workerAckTimeout } = defaultOptions) => {
         onDecode(result);
       }
     }, [ onDecode ]);
+
+
+    const mounted = React.useRef(false);
+    React.useEffect(() => {
+      mounted.current = true;
+
+      return () => {
+        mounted.current = false;
+      }
+    }, []);
+    
   
     const handleCapture = React.useCallback(async (imageData) => {
       const result = await decoder.decode(imageData);
-      handleDecode(result);
+      if (Boolean(mounted.current)) {
+        handleDecode(result);
+      }
     }, [ decoder, handleDecode ]);
   
     return <StreamComponent ref={ref} onCapture={handleCapture} {...props} />
