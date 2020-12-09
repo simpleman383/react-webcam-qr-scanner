@@ -18,7 +18,7 @@ const defaults = {
 const asyncRequestAnimationFrame = () => new Promise(res => requestAnimationFrame(id => res(id))); 
 
 
-const WebcamStream = ({ 
+const WebcamStream = React.forwardRef(({ 
   constraints = defaults.constraints,
   captureSize = defaults.activeCaptureSize, 
   onCapture,
@@ -26,8 +26,10 @@ const WebcamStream = ({
   onPause,
   onLoadedMetadata,
   ...props 
-}) => {
-  const $videoRef = React.useRef();
+}, ref) => {
+  const $videoRef = React.useRef(null);
+
+  React.useImperativeHandle(ref, () => $videoRef.current);
 
   const mediaStreamContext = React.useMemo(() => {
     return MediaStreamManager.createStreamContext(constraints);
@@ -130,20 +132,28 @@ const WebcamStream = ({
 
 
   return <video ref={$videoRef} onPlay={handlePlay} onPause={handlePause} onLoadedMetadata={handleMetadataLoaded} {...props} />
-};
+});
 
 
 const envSupportsWebRTC = () => {
   return navigator && navigator.mediaDevices && navigator.mediaDevices.enumerateDevices && navigator.mediaDevices.getUserMedia;
 }
 
-const WebcamStreamWrapper = (props) => {
+
+const WebcamStreamWrapper = (props, ref) => {
+  const { 
+    constraints, 
+    captureSize,
+    onCapture, 
+    ...rest 
+  } = props;
+
   if (envSupportsWebRTC()) {
-    return <WebcamStream {...props} />
+    return <WebcamStream ref={ref} constraints={constraints} captureSize={captureSize} onCapture={onCapture} {...rest} />
   }
   else {
-    return null;
+    return <video ref={ref} {...rest} />;
   }
 };
 
-export default WebcamStreamWrapper;
+export default React.forwardRef(WebcamStreamWrapper);

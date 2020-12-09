@@ -1,4 +1,4 @@
-import QrWorker from "worker-loader?filename=qr.worker.js!./Worker.js"
+import QrWorker from "worker-loader?filename=qr-decoding.worker.js!./Worker.js"
 
 const asyncTimeout = (ms) => new Promise((res, rej) => setTimeout(rej, ms));
 

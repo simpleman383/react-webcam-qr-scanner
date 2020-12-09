@@ -8,11 +8,10 @@
   ],
   "dependencies": {
     "jsqr": "latest",
-    "prop-types": "latest",
     "worker-loader": "latest"
   },
   "peerDependencies": {
-    "react": "latest"
+    "react": "^16.8.0"
   },
   "devDependencies": {
     "@babel/cli": "latest",
