@@ -3,9 +3,10 @@ import MediaStreamManager from "./MediaStreamManager"
 
 const defaults = {
   constraints: {
-    video: true,
     audio: false,
-    facingMode: "environment"
+    video: {
+      facingMode: "environment"
+    },
   },
   activeCaptureSize: {
     width: 1280,

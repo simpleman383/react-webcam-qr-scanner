@@ -39,11 +39,21 @@ const MyAwesomeComponent = (props) => {
     console.log(result);
   } 
 
+  const handleScannerLoad = (mode) => {
+    console.log(mode);
+  }
+
   return (
     <Scanner 
       className="some-classname"
       onDecode={handleDecode}
-      constraints={{ audio: false, video: true, facingMode: { exact: "environment" } }}
+      onScannerLoad={handleScannerLoad}
+      constraints={{ 
+        audio: false, 
+        video: { 
+          facingMode: "environment" 
+        } 
+      }}
       captureSize={{ width: 1280, height: 720 }}
     />
   );
