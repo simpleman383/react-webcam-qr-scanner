@@ -11,7 +11,10 @@ const defaults = {
     width: 1280,
     height: 720
   },
-  size: { dx: 0, dy: 0, width: 0, height: 0 }
+  size: {
+    video: { width: 0, height: 0 },
+    capture: { dx: 0, dy: 0, width: 0, height: 0 }
+  }
 };
 
 
@@ -54,8 +57,8 @@ const WebcamStream = React.forwardRef(({
 
   const graphics = React.useMemo(() => {
     const canvas = document.createElement("canvas");
-    canvas.width = size.width;
-    canvas.height = size.height;
+    canvas.width = size.capture.width;
+    canvas.height = size.capture.height;
     return canvas;
   }, [ size ]);
 
@@ -70,10 +73,16 @@ const WebcamStream = React.forwardRef(({
     const captureWidth = Math.min(captureSize.width, videoWidth);
     const captureHeight = Math.min(captureSize.height, videoHeight);
 
-    setSize({ 
-      dx, dy,
-      width: captureWidth,
-      height: captureHeight
+    setSize({
+      video: {
+        width: videoWidth,
+        height: videoHeight
+      }, 
+      capture: {
+        dx, dy,
+        width: captureWidth,
+        height: captureHeight
+      },
     });
 
     typeof(onLoadedMetadata) == 'function' && onLoadedMetadata(event);
@@ -87,10 +96,10 @@ const WebcamStream = React.forwardRef(({
       while(this.status === "running") {
         await asyncRequestAnimationFrame();
 
-        if ($videoRef.current && $videoRef.current.readyState > 1 && size.width > 0 && size.height > 0) {
+        if ($videoRef.current && $videoRef.current.readyState > 1 && size.video.width > 0 && size.video.height > 0) {
           const context = graphics.getContext("2d");
-          context.drawImage($videoRef.current, size.dx, size.dy, size.width, size.height);
-          const imageData = context.getImageData(0, 0, size.width, size.height);
+          context.drawImage($videoRef.current, size.capture.dx, size.capture.dy, size.capture.width, size.capture.height, 0, 0, size.capture.width, size.capture.height);
+          const imageData = context.getImageData(0, 0, size.capture.width, size.capture.height);
 
           if (typeof(onCapture) === "function") {
             await onCapture(imageData);
