@@ -1,5 +1,16 @@
 import jsQR from "jsqr";
 
+
+function decode(data, width, height) {
+  try {
+    return jsQR(data, width, height);
+  } catch (err) {
+    console.warn(err);
+    return null;
+  }
+};
+
+
 self.onmessage = function(event) {
   if (event.data) {
     const { id, content } = event.data;
@@ -11,7 +22,7 @@ self.onmessage = function(event) {
       }
       case "decode": {
         const { data, width, height } = content.data;
-        const result = jsQR(data, width, height);
+        const result = decode(data, width, height);
         self.postMessage({ 
           id: id, 
           content: {

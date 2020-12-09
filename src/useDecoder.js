@@ -40,7 +40,14 @@ export const useDecoder = ({ askTimeout, onLoad }) => {
       case DecoderState.MainThread:
         return {
           decode: function(imageData) {
-            return Promise.resolve(jsQR.current(imageData));
+            try {
+              const { data, width, height } = imageData;
+              const result = jsQR.current(data, width, height);
+              return Promise.resolve(result);
+            } catch (err) {
+              console.warn(err);
+              return Promise.resolve(null);
+            }
           }
         };
       default:
