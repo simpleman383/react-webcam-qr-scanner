@@ -3,10 +3,18 @@ import jsQR from "jsqr";
 
 function decode(data, width, height) {
   try {
-    return jsQR(data, width, height);
+    const result = jsQR(data, width, height);
+    return {
+      success: true,
+      result: result
+    }
   } catch (err) {
     console.warn(err);
-    return null;
+    
+    return {
+      success: false,
+      result: null
+    };
   }
 };
 

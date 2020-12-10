@@ -17,6 +17,7 @@ const DecoderDefault = {
 export const useDecoder = ({ askTimeout, onLoad }) => {
   const jsQR = React.useRef(null);
   
+  const [ exceptions, setExceptions ] = React.useState(0);
   const [ state, setState ] = React.useState(DecoderState.Pending);
 
   const worker = React.useMemo(() => {
@@ -27,14 +28,20 @@ export const useDecoder = ({ askTimeout, onLoad }) => {
       console.warn("Failed to start a Web Worker");
       return null;
     }
-  }, []);
+  }, [ exceptions ]);
 
   const decoder = React.useMemo(() => {
     switch (state) {
       case DecoderState.Worker:
         return {
-          decode: function(imageData) {
-            return worker.requestDecoding(imageData);
+          decode: async function(imageData) {
+            try {
+              return await worker.requestDecoding(imageData);
+            } 
+            catch {
+              setExceptions(e => e + 1);
+              return null;
+            }
           }
         };
       case DecoderState.MainThread:
@@ -46,6 +53,8 @@ export const useDecoder = ({ askTimeout, onLoad }) => {
               return Promise.resolve(result);
             } catch (err) {
               console.warn(err);
+
+              setExceptions(e => e + 1);
               return Promise.resolve(null);
             }
           }
@@ -67,22 +76,17 @@ export const useDecoder = ({ askTimeout, onLoad }) => {
       setState(DecoderState.Fallback);
 
       try {
-        if (typeof(jsQR.current) == "function") {
-          setState(DecoderState.MainThread);
-          typeof(onLoad) == "function" && onLoad(DecoderState.MainThread);
-        }
-        else {
-          const loadableJsQR = await import("jsqr");
-          jsQR.current = loadableJsQR.default;
-          setState(DecoderState.MainThread);
-        }
+        const loadableJsQR = await import("jsqr");
+        jsQR.current = loadableJsQR.default;
+        setState(DecoderState.MainThread);
+        typeof(onLoad) == "function" && onLoad(DecoderState.MainThread);
       }
       catch (err) {
         console.error("Failed to load script.", err);
         setState(DecoderState.Failed);
       }
     }
-  }, [ worker, jsQR.current ]);
+  }, [ worker ]);
 
 
   React.useEffect(() => {

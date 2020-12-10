@@ -66,11 +66,11 @@ class WorkerInterface {
       data: imageData
     });
 
-    if (response !== null) {
-      return response.data;
+    if (response.data.success) {
+      return Promise.resolve(response.data.result);
     }
     else {
-      return null;
+      return Promise.reject(null);
     }
     
   }
