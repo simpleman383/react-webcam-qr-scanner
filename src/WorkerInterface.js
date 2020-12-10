@@ -7,16 +7,35 @@ class WorkerInterface {
 
   constructor() {
     this.onReceive = this.onReceive.bind(this);
+    this.onError = this.onError.bind(this);
 
+    this.initializeWorker();
+  }
+
+  initializeWorker = function() {
     this.worker = new QrWorker();
+    this.setupHandlers();
+  }
+
+  setupHandlers = function() {
     this.worker.addEventListener("message", this.onReceive);
+    this.worker.addEventListener("error", this.onError);
+  }
+
+  removeHandlers = function() {
+    this.worker.removeEventListener("message", this.onReceive);
+    this.worker.removeEventListener("error", this.onError);
   }
 
   onDestroy() {
-    this.worker.removeEventListener("message", this.onReceive);
+    this.removeHandlers();
     this.worker.terminate();
   }
-  
+
+  onError() {
+    this.onDestroy();
+    this.initializeWorker();
+  }
 
   onReceive(event) {
     if (event.data) {

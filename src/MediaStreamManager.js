@@ -9,22 +9,45 @@ class MediaStreamManager {
       state: "created",
     });
 
+
+    MediaStreamManager.storage.forEach((context, contextId) => {
+      if (context.state == "cancelled") {
+        MediaStreamManager.storage.delete(contextId);
+      }
+    });
+
     const getContextStream = async function() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
-        if (MediaStreamManager.storage.has(streamId) && MediaStreamManager.storage.get(streamId).state === "cancelled") {
-          console.error("Stream already cancelled");
-          stream.getVideoTracks().forEach(track => track.stop());
-          MediaStreamManager.storage.delete(streamId);
-          return null;
+        if (MediaStreamManager.storage.has(streamId)) {
+          const context = MediaStreamManager.storage.get(streamId);
+
+          if (context.state === "cancelled") {
+            console.warn(`MediaStreamManager: stream ${streamId} already cancelled`);
+
+            if (stream !== null) {
+              stream.getVideoTracks().forEach(track => track.stop());
+            }
+            MediaStreamManager.storage.delete(streamId);
+            return null;
+          }
+          else {
+            MediaStreamManager.storage.set(streamId, {
+              state: "started",
+              stream: stream
+            });
+            
+            return stream;
+          }
         }
         else {
-          MediaStreamManager.storage.set(streamId, {
-            state: "started",
-            stream: stream
-          });
-          return stream;
+          console.warn(`MediaStreamManager: stream ${streamId} probably already cancelled`);
+
+          if (stream !== null) {
+            stream.getVideoTracks().forEach(track => track.stop());
+          }
+          return null;
         }
       }
       catch (err) {
@@ -33,7 +56,7 @@ class MediaStreamManager {
         return null;
       }
     }
-    
+
     return {
       id: streamId,
       getStream: getContextStream
@@ -45,13 +68,6 @@ class MediaStreamManager {
       const context = MediaStreamManager.storage.get(contextId);
 
       switch (context.state) {
-        case "created": {
-          MediaStreamManager.storage.set(contextId, {
-            ...context,
-            state: "cancelled"
-          });
-          break;
-        }
         case "started": {
           const { stream } = context;
           if (stream !== null) {
@@ -60,8 +76,10 @@ class MediaStreamManager {
           MediaStreamManager.storage.delete(contextId);
           break;
         }
-        default:
-        case "cancelled": {
+        case "created":
+        case "cancelled":
+        default: {
+          MediaStreamManager.storage.delete(contextId);
           break;
         }
       }

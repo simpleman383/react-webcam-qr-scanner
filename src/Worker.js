@@ -7,7 +7,7 @@ function decode(data, width, height) {
     return {
       success: true,
       result: result
-    }
+    };
   } catch (err) {
     console.warn(err);
     

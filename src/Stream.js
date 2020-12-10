@@ -35,26 +35,40 @@ const WebcamStream = React.forwardRef(({
 
   React.useImperativeHandle(ref, () => $videoRef.current);
 
+  const [ visible, setVisible ] = React.useState(true);
+
+  const videoState = React.useRef("paused");
+  const updateState = React.useCallback((nextState) => {
+    videoState.current = nextState;
+  }, []);
+
   const mediaStreamContext = React.useMemo(() => {
     return MediaStreamManager.createStreamContext(constraints);
-  }, [ constraints ]);
+  }, [ constraints, visible ]);
 
   const startStream = React.useCallback(async () => {
+    updateState("loading");
     const stream = await mediaStreamContext.getStream();
 
-    if (stream !== null) {
+    if (stream !== null && $videoRef.current) {
       $videoRef.current.srcObject = stream;
       $videoRef.current.playsInline = true;
       $videoRef.current.muted = true;
       $videoRef.current.disablePictureInPicture = true;
-      $videoRef.current.play();
+  
+      await $videoRef.current.play();
+      updateState("playing");
+    }
+    else {
+      updateState("error");
+      MediaStreamManager.stopStream(mediaStreamContext.id);
     }
   }, [ mediaStreamContext ]);
 
-  const stopStream = React.useCallback(() => {
+  const stopStream = React.useCallback(async () => {
     $videoRef.current.pause();
-    $videoRef.current.srcObject = null;
     MediaStreamManager.stopStream(mediaStreamContext.id);
+    updateState("paused");
   }, [ mediaStreamContext ]);
 
   const [ size, setSize ] = React.useState(defaults.size);
@@ -125,23 +139,44 @@ const WebcamStream = React.forwardRef(({
     return () => capturing.stop();
   }, [ capturing ]);
   
-
   const handlePlay = (event) => {
     capturing.start();
-
     typeof(onPlay) == "function" && onPlay(event);
   }
 
   const handlePause = (event) => {
     capturing.stop();
-
     typeof(onPause) == "function" && onPause(event);
   }
 
+  const handleVisibilityChange = React.useCallback((event) => {
+    setVisible(!Boolean(event.target.hidden));
+  }, []);
+
+  React.useEffect(() => {
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    }
+
+  }, [ handleVisibilityChange ]);
+
   React.useLayoutEffect(() => {
-    startStream();
-    return () => stopStream();
-  }, [ mediaStreamContext, startStream, stopStream ]);
+    if (visible) {
+      if (videoState.current === "paused") {
+        startStream();
+      }
+    }
+    else {
+      if (videoState.current === "playing") {
+        stopStream();
+      }
+    }
+
+    return () => {
+      stopStream();
+    };
+  }, [ mediaStreamContext, visible, startStream, stopStream ]);
 
 
   return <video ref={$videoRef} onPlay={handlePlay} onPause={handlePause} onLoadedMetadata={handleMetadataLoaded} {...props} />
